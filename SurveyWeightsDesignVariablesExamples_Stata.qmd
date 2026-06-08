@@ -85,7 +85,7 @@ execute:
 
 2017 BSA - learn about the survey design in the documentation that comes together with the data under the `mrdoc/pdf` folder.
 
-The 2017 BSA is a three stage stratified random survey, with postcode sectors, adresses and individuals as the units selected at each stage.
+The 2017 BSA is a three stage stratified random survey, with postcode sectors, addresses, and individuals as the units selected at each stage.
 
 -   Primary sampling units were furthermore stratified according to geographies (sub regions), population density, and proportion of owner-occupiers.
 
@@ -122,12 +122,6 @@ library(ggplot2) # Visualisation
 
 data_dir <- "C:/Data/UKDA-8450-stata"
 
-# Check that the data directory exists
-if (!dir.exists(data_dir)) {
-  stop(
-    "Data directory not found. Please edit 'data_dir' so it points to your UKDA-8450-stata folder."
-  )
-}
 
 # ------------------------------------------------------------------
 # IMPORT DATA
@@ -140,28 +134,69 @@ bsa_file <- file.path(
   "bsa2017_for_ukda.dta"
 )
 
-# Check that the dataset exists
-if (!file.exists(bsa_file)) {
-  stop(
-    paste(
-      "Dataset not found:",
-      bsa_file,
-      "\nCheck that 'data_dir' points to the correct folder."
-    )
-  )
-}
-
-# Import Stata dataset
-bsa17 <- read_dta(bsa_file)
-
-# Confirm import was successful
-message("Dataset imported successfully.")
 
 # Check dimensions
 dim(bsa17)
 
 # View the dataset in RStudio
 # View(bsa17)
+```
+
+Mean
+
+## Mean age
+
+```{r}
+mean_age <- mean(bsa17$RAgeE, na.rm = TRUE)
+
+cat("Mean age:", round(mean_age, 1), "years\n")
+```
+
+## Weighted mean
+
+```{r}
+# ------------------------------------------------------------------
+# WEIGHTED MEAN AGE
+# ------------------------------------------------------------------
+
+weighted_mean_age <- wtd.mean(
+  x = bsa17$RAgeE,
+  weights = bsa17$WtFactor,
+  normwt = TRUE,
+  na.rm = TRUE
+)
+
+cat(
+  "Weighted mean age:",
+  round(weighted_mean_age, 1),
+  "years\n"
+)
+```
+
+```{r}
+# ------------------------------------------------------------------
+# APPROXIMATE 95% CONFIDENCE INTERVAL
+# ------------------------------------------------------------------
+
+weighted_se_age <- sqrt(
+  wtd.var(
+    x = bsa17$RAgeE,
+    weights = bsa17$WtFactor,
+    normwt = TRUE,
+    na.rm = TRUE
+  ) / sum(!is.na(bsa17$RAgeE))
+)
+
+lower_ci <- weighted_mean_age - 1.96 * weighted_se_age
+upper_ci <- weighted_mean_age + 1.96 * weighted_se_age
+
+cat(
+  "95% confidence interval:",
+  round(lower_ci, 1),
+  "to",
+  round(upper_ci, 1),
+  "years\n"
+)
 ```
 
 ## Specifying the survey design in R
@@ -172,12 +207,16 @@ dim(bsa17)
     -   `WtFactor` as weights.
 -   We create a `svydesign` object. A survey design informed copy of the data. which will be used for subsequent estimation.
 
-```{r 5_2}
-bsa17.s<-svydesign(ids=~Spoint, 
-                   strata=~StratID, 
-                   weights=~WtFactor,
-                   data=bsa17)        ### Specifying the survey design
-class(bsa17.s)                        ### Examining the svydesign object                                        
+```{r}
+
+bsa17.s <- svydesign(
+  ids = ~Spoint,
+  strata = ~StratID,
+  weights = ~WtFactor,
+  data = bsa17
+)
+
+summary(bsa17.s)          
 ```
 
 ## Mean age and its 95% CI
@@ -185,7 +224,10 @@ class(bsa17.s)                        ### Examining the svydesign object
 Estimate mean age of respondents using `svymean()`
 
 ```{r mean}
-svymean(~RAgeE,bsa17.s)
+svymean(
+  ~RAgeE,
+  design=bsa17.s
+  na.rm=TRUE)
 ```
 
 By default `svymean()` computes the standard error of the mean. We can use `confint()` to also get a confidence interval.
@@ -209,8 +251,6 @@ round(                                    ### Rounding the results to one decima
 ```
 
 ## Example general weighting
-
-:
 
 ```{r}
 a.m<-wtd.mean(                               ### Weighted mean function from the
