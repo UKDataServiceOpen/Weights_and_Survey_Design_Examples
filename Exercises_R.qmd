@@ -3,51 +3,63 @@ title: Using survey weights and survey design variables
 subtitle: R examples
 institute: UK Data Service
 
-bibliography: inference.bib
-
 date: "June 2026"
 date-format: MMMM YYYY
 format:
   html:
     css: ukds_long.css
-    embed-resources: true
+    embed-resources: false
     toc: true
     toc-depth: 2
     number-sections: true
 
 execute:
   echo: true
+  warning: false
+  message: false
 ---
 
-## Data and software requirements
+- This resource shows how to apply survey weights and account for survey design in R. Using data from the 2017 British Social Attitudes Survey, we will see how weighting changes estimates, how survey design can be specified in R, and why accounting for the sample design matters when assessing uncertainty.
 
--   An up to date copy of R (with the `dplyr`, `haven`, `survey` and `Hmisc` packages installed).
+- For an introduction to the concepts covered here, including survey weights, stratification, clustering and design variables, see the companion resource *Survey explainer: Survey weights and design variables*.
 
--   An active account with the UK Data Service (for downloading the datasets)
+- Survey weights help make survey estimates more representative of the target population. Many surveys also use complex sample designs involving stratification and clustering. These design features should be taken into account when estimating standard errors and confidence intervals.
 
--   We will use data from the [2017 British Social Attitudes Survey (BSA)](https://beta.ukdataservice.ac.uk/datacatalogue/studies/study?id=8450)[@NatCen2024]. \[Add instructions on how to access\]
-
-## How to weight and account for survey design in R
+# Survey weighting and design in R
 
 Base R includes only limited support for weighted analysis. However, several R packages provide functions for calculating weighted estimates.
 
 For example, the `Hmisc` package includes functions such as `wtd.mean()`, `wtd.var()` and `wtd.quantile().`The `summarytools` package supported weighted frequncies tables and common descriptive statistics. The functions from these packages can be used for producing weighted estimates, but they do not all you to fully account for survey design features such as stratification, clustering and unequal selection probabilities.
 
-The *Survey* package [@Lumley2024] provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals.
+The `Survey` package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals.
 
 To use the Survey package, you need to:
 
--   Identify the survey weights and design variables.
--   Create a survey design object via the command `svydesign` - this tells R how the survey was designed and which weights to use.
--   Compute estimates with survey-specific functions.
+- Identify the survey weights and design variables.
+- Create a survey design object via the command `svydesign` - this tells R how the survey was designed and which weights to use.
+- Compute estimates with survey-specific functions.
 
-## Identifying the survey design
+# Data and software requirements
+
+To work through the examples on your own machine, you will need:
+
+- Basic familiarity with R.
+
+- An up-to-date copy of R.
+
+- The `dplyr`, `haven`, `survey`, `Hmisc` and `ggplot` packages.
+
+- A UK Data Service account (for downloading the data)
+
+- A copy of the [2017 British Social Attitudes Survey (BSA)](https://beta.ukdataservice.ac.uk/datacatalogue/studies/study?id=8450) - the examples use the Stata (.dta) version of the dataset.
+
+# Identifying the survey design
 
 The 2017 British Social Attitudes (BSA) survey used a three-stage stratified random sample. Postcode sectors were selected first, followed by addresses and then individuals.
 
 The primary sampling units (postcode sectors) were:
 
--   stratified by sub-region, population density, and the proportion of owner-occupied housing.
+- stratified by sub-region, population density, and the proportion of owner-occupied housing.
 
 selected with probability proportional to size, so postcode sectors containing more addresses had a greater chance of being selected.
 
@@ -61,7 +73,7 @@ From the documentation that comes with the survey, we can find the following.
 | Stratum               | `StratID`  |
 | Primary sampling unit | `Spoint`   |
 
-## Preparing the data - R
+# Preparing the data 
 
 ```{r}
 
@@ -122,11 +134,11 @@ dim(bsa17)
 # View(bsa17)
 ```
 
-## Example 1: Mean age
+# Example 1: Mean age
 
 To look at the effect of weighting and accounting for survey design, we are going to compare estimates for mean age. To start, we will first calculate the unweighted mean age. We will then compare this with a weighted estimate.
 
-### Unweighted mean age
+## Unweighted mean age
 
 ```{r}
 # ------------------------------------------------------------------
@@ -142,7 +154,7 @@ mean_age
 
 ```
 
-### Weighted mean age
+## Weighted mean age
 
 To calculated the weighted mean we first use `wtd.mean()`, from the `Hmisc` package.
 
@@ -212,15 +224,15 @@ cat(
 
 To use the R Survey package we need to:
 
--   use the survey weights and design variables
+- use the survey weights and design variables
 
-    -   `Spoint` as the primary sampling unit identifier;
-    -   `StratID` as the stratum identifier;
-    -   `WtFactor` as the survey weight.
+  - `Spoint` as the primary sampling unit identifier;
+  - `StratID` as the stratum identifier;
+  - `WtFactor` as the survey weight.
 
--   create a survey design object via the command `svydesign` - this tells R how the survey was designed and which weights to use.
+- create a survey design object via the command `svydesign` - this tells R how the survey was designed and which weights to use.
 
--   Compute estimates with survey-specific functions.
+- Compute estimates with survey-specific functions.
 
 ### Create the survey design object
 
@@ -282,28 +294,20 @@ The weighted mean age is virtually identical using both approaches. However, the
 
 > Key points
 >
-> -   Applying survey weights reduced the estimated mean age from 52.2 years to 48.3 years.
->
-> <!-- -->
->
-> -   The weighted mean was virtually identical whether calculated using `Hmisc` or the `survey` package.
->
-> <!-- -->
->
-> -   The `survey` package produced a wider confidence interval because it accounts for the sample design when estimating uncertainty.
+> - Applying survey weights reduced the estimated mean age from 52.2 years to 48.3 years.
+> - The weighted mean was virtually identical whether calculated using `Hmisc` or the `survey` package.
+> - The `survey` package produced a wider confidence interval because it accounts for the sample design when estimating uncertainty.
 
-## Example 2: Estimating a proportion
+# Example 2: Estimating a proportion
 
 The same approach can be used to estimate proportions. In this example, we will estimate the proportion of respondents who report being interested in politics. The variable is `Politics`. It has five categories ranging from 1: 'A great deal' to 5: 'Not at all'. We define respondents as interested in politics of they answered either *A great deal* or *Quite a lot*.
 
 ```{r}
+
 # Frequency distribution of political interest
 table(
   droplevels(
-    haven::as_factor(
-      bsa17$Politics,
-      levels = "both"
-    )
+    as_factor(bsa17$Politics)
   )
 )
 
@@ -354,12 +358,11 @@ In Example 2, we estimated the proportion of adults who reported being intereste
 
 These are examples of domain estimates because they describe subgroups of the population.
 
-However, when we want to compute estimates for a sub-group of the population, we need to remember that weights are usually designed to make the full sample representative of the population. 
+However, when we want to compute estimates for a sub-group of the population, we need to remember that weights are usually designed to make the full sample representative of the population.
 
 We could creation regional datasets to analyse respondents belonging in each subgroup. However, this can lead to incorrect estimates of uncertainity because information from the rest of the sample is discarded when estimating standard errors.
 
 A better approach is to use survey functions that estimate statistics for subgroups while reatining information from the full durvey design. In the survey packages, this can be done using functions such as `svyby().`
-
 
 ## Q5 Answer (1)
 
@@ -401,13 +404,11 @@ politics_region[, 2:4] <- round(politics_region[, 2:4], 1)
 politics_region
 ```
 
-
 ## Plotting CIs
 
-Let's plot the output to help us compare both the point estimates and the the uncertainity. 
+Let's plot the output to help us compare both the point estimates and the the uncertainity.
 
 ```{r}
-# Rename columns for easier plotting
 plot_region <- politics_region
 
 names(plot_region)[1:4] <- c(
@@ -417,25 +418,13 @@ names(plot_region)[1:4] <- c(
   "ci_upper"
 )
 
-# Convert proportions to percentages
-plot_region$percent_interested <- plot_region$percent_interested * 100
-plot_region$ci_lower <- plot_region$ci_lower * 100
-plot_region$ci_upper <- plot_region$ci_upper * 100
-
-# Plot percentage interested in politics by region
 ggplot(
   plot_region,
-  aes(
-    x = percent_interested,
-    y = region
-  )
+  aes(x = percent_interested, y = region)
 ) +
   geom_point() +
   geom_errorbar(
-    aes(
-      xmin = ci_lower,
-      xmax = ci_upper
-    ),
+    aes(xmin = ci_lower, xmax = ci_upper),
     orientation = "y",
     width = 0.2
   ) +
@@ -444,6 +433,5 @@ ggplot(
     y = "Government Office Region"
   )
 ```
+
 Political interest varies across regions, ranging from around one-third of adults in the North East to just over one-half in London. The confidence intervals indicate that some of this variation may reflect sampling uncertainty, particularly in regions with smaller sample sizes.
-
-
