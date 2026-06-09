@@ -101,8 +101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#example-2-estimating-a-proportion" id="toc-example-2-estimating-a-proportion" class="nav-link" data-scroll-target="#example-2-estimating-a-proportion"><span class="header-section-number">7</span> Example 2: Estimating a proportion</a></li>
   <li><a href="#example-3-estimates-for-population-sub-groups-domain-estimates" id="toc-example-3-estimates-for-population-sub-groups-domain-estimates" class="nav-link" data-scroll-target="#example-3-estimates-for-population-sub-groups-domain-estimates"><span class="header-section-number">8</span> Example 3: Estimates for population sub-groups (domain estimates)</a>
   <ul class="collapse">
-  <li><a href="#plotting-cis" id="toc-plotting-cis" class="nav-link" data-scroll-target="#plotting-cis"><span class="header-section-number">8.1</span> Plotting CIs</a></li>
-  <li><a href="#an-additional-note-on-subsetting" id="toc-an-additional-note-on-subsetting" class="nav-link" data-scroll-target="#an-additional-note-on-subsetting"><span class="header-section-number">8.2</span> An additional note on subsetting</a></li>
+  <li><a href="#an-additional-note-on-subsetting" id="toc-an-additional-note-on-subsetting" class="nav-link" data-scroll-target="#an-additional-note-on-subsetting"><span class="header-section-number">8.1</span> An additional note on subsetting</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -164,7 +163,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>The functions from these packages can be used for producing weighted estimates, but they do not allow users to fully account for survey design features such as stratification, clustering and unequal selection probabilities.</p>
 <p><strong>Survey analysis functions</strong></p>
-<p>The <code>Survey</code> package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. To use the Survey package, you need to:</p>
+<p>The <code>survey</code> package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. To use the Survey package, you need to:</p>
 <ul>
 <li>identify the survey weights and design variables.</li>
 <li>create a survey design object via the command <code>svydesign</code> - this tells R how the survey was designed and which weights to use.</li>
@@ -178,7 +177,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><p>basic familiarity with R.</p></li>
 <li><p>an up-to-date copy of R.</p></li>
-<li><p>the <code>dplyr</code>, <code>haven</code>, <code>survey</code>, <code>Hmisc</code> and <code>ggplot</code> packages.</p></li>
+<li><p>the <code>dplyr</code>, <code>haven</code>, <code>survey</code>, <code>Hmisc</code> and <code>ggplot2</code> packages.</p></li>
 <li><p>a UK Data Service account (for downloading the data)</p></li>
 <li><p>a copy of the <a href="https://beta.ukdataservice.ac.uk/datacatalogue/studies/study?id=8450">2017 British Social Attitudes Survey (BSA)</a> - the examples use the Stata (.dta) version of the dataset.</p></li>
 </ul>
@@ -587,9 +586,15 @@ I(RAgecat5 == 1)     28.5  26.5  30.6</code></pre>
 </section>
 <section id="example-3-estimates-for-population-sub-groups-domain-estimates" class="level1" data-number="8">
 <h1 data-number="8"><span class="header-section-number">8</span> Example 3: Estimates for population sub-groups (domain estimates)</h1>
-<p>In Example 2, we estimated the proportion of adults who reported being interested in politics. In this example, we will extend this analysis by estimating the proportion interested in politics separately within each Government Office Region (<code>GOR_ID</code>). These are examples of <strong>domain estimates</strong> because they describe subgroups of the population.</p>
-<p>In the <code>survey</code> package, one way of producing domain estimates is using <code>svyby().</code></p>
-<p>In this example, we will recreate a new variable politics_interest to capture those who are interested in politics. As we have a new variable, we need to recreate the survey design object as the current object does not contain this new variable. We then use</p>
+<p>In Example 2, we estimated the proportion of adults who reported being interested in politics. In this example, we will extend this analysis by estimating the proportion interested in politics separately within each Government Office Region (<code>GOR_ID</code>). These are examples of <strong>domain estimates</strong> because they describe subgroups of the population. In the <code>survey</code> package, one way of producing domain estimates is using <code>svyby().</code></p>
+<p>In this example, we will:</p>
+<ul>
+<li><p>create a new binary variable <code>politics_interest</code> to capture those interested in politics.</p></li>
+<li><p>recreate the survey design object so that it contains the new variable.</p></li>
+<li><p>use <code>svyby()</code> and <code>svymean</code> to estimate the proprtoin interested in each Goverment Office Region.</p></li>
+<li><p>convert the proportions to percentages.</p></li>
+<li><p>plot the percentages to make it easier to compare.</p></li>
+</ul>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create indicator: interested in politics = 1, otherwise 0</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>bsa17<span class="sc">$</span>politics_interest <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
@@ -650,9 +655,7 @@ L Wales                    48.7
 M Scotland                 49.2</code></pre>
 </div>
 </div>
-<section id="plotting-cis" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="plotting-cis"><span class="header-section-number">8.1</span> Plotting CIs</h2>
-<p>Let’s plot the output to help us compare both the point estimates and the the uncertainty.</p>
+<p>Let’s now plot the point estimates and their confidence intervals.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>plot_region <span class="ot">&lt;-</span> politics_region</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -686,9 +689,8 @@ M Scotland                 49.2</code></pre>
 </div>
 </div>
 <p>The estimates show political interest varies across regions, ranging from around one-third of adults in the North East to just over one-half in London. The confidence intervals indicate that some of this variation may reflect sampling uncertainty.</p>
-</section>
-<section id="an-additional-note-on-subsetting" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="an-additional-note-on-subsetting"><span class="header-section-number">8.2</span> An additional note on subsetting</h2>
+<section id="an-additional-note-on-subsetting" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="an-additional-note-on-subsetting"><span class="header-section-number">8.1</span> An additional note on subsetting</h2>
 <p>Another way to estimate statistics for a subgroup is to analyse only respondents belonging to that group. For example, if we were only interested in respondents living in London, we could analyse just those cases and calculate the estimate for that subgroup using <code>subset ()</code> .</p>
 <p>There are a few points to note when using this approach.</p>
 <ul>

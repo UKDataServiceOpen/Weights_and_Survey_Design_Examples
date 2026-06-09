@@ -53,7 +53,7 @@ The functions from these packages can be used for producing weighted estimates, 
 
 **Survey analysis functions**
 
-The `Survey` package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. To use the Survey package, you need to:
+The `survey` package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. To use the Survey package, you need to:
 
 - identify the survey weights and design variables.
 - create a survey design object via the command `svydesign` - this tells R how the survey was designed and which weights to use.
@@ -69,7 +69,7 @@ To work through the examples on your own machine, you will need:
 
 - an up-to-date copy of R.
 
-- the `dplyr`, `haven`, `survey`, `Hmisc` and `ggplot` packages.
+- the `dplyr`, `haven`, `survey`, `Hmisc` and `ggplot2` packages.
 
 - a UK Data Service account (for downloading the data)
 
@@ -421,11 +421,19 @@ round(
 
 # Example 3: Estimates for population sub-groups (domain estimates)
 
-In Example 2, we estimated the proportion of adults who reported being interested in politics. In this example, we will extend this analysis by estimating the proportion interested in politics separately within each Government Office Region (`GOR_ID`). These are examples of **domain estimates** because they describe subgroups of the population.
+In Example 2, we estimated the proportion of adults who reported being interested in politics. In this example, we will extend this analysis by estimating the proportion interested in politics separately within each Government Office Region (`GOR_ID`). These are examples of **domain estimates** because they describe subgroups of the population. In the `survey` package, one way of producing domain estimates is using `svyby().`
 
-In the `survey` package, one way of producing domain estimates is using `svyby().`
+In this example, we will:
 
-In this example, we will recreate a new variable politics_interest to capture those who are interested in politics. As we have a new variable, we need to recreate the survey design object as the current object does not contain this new variable. We then use
+- create a new binary variable `politics_interest` to capture those interested in politics.
+
+- recreate the survey design object so that it contains the new variable.
+
+- use `svyby()` and `svymean` to estimate the proprtoin interested in each Goverment Office Region.
+
+- convert the proportions to percentages.
+
+- plot the percentages to make it easier to compare.
 
 ```{r 5.8.2}
 
@@ -463,9 +471,7 @@ politics_region[, 2:4] <- round(politics_region[, 2:4], 1)
 politics_region
 ```
 
-## Plotting CIs
-
-Let's plot the output to help us compare both the point estimates and the the uncertainty.
+Let's now plot the point estimates and their confidence intervals.
 
 ```{r}
 plot_region <- politics_region
