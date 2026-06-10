@@ -530,3 +530,4 @@ Although subsetting can be useful when analysing a subgroup, domain estimation u
 - If new variables are added to the dataset after creating a survey design object, the survey design object should be recreated before analysis.
 
 - Be cautious when analysing a subgroup separately. Survey weights may not make the subsample representative of the corresponding population subgroup. Always create the survey design object first and then use subset() to retain all the survey design information.
+
