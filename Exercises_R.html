@@ -86,7 +86,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul class="collapse">
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
-  <li><a href="#survey-weighting-and-design-in-r" id="toc-survey-weighting-and-design-in-r" class="nav-link" data-scroll-target="#survey-weighting-and-design-in-r"><span class="header-section-number">2</span> Survey weighting and design in R</a></li>
+  <li><a href="#survey-weighting-and-design-in-r" id="toc-survey-weighting-and-design-in-r" class="nav-link" data-scroll-target="#survey-weighting-and-design-in-r"><span class="header-section-number">2</span> Survey weighting and design in R</a>
+  <ul class="collapse">
+  <li><a href="#general-weighting-functions" id="toc-general-weighting-functions" class="nav-link" data-scroll-target="#general-weighting-functions"><span class="header-section-number">2.1</span> <strong>General weighting functions</strong></a></li>
+  <li><a href="#survey-analysis-functions" id="toc-survey-analysis-functions" class="nav-link" data-scroll-target="#survey-analysis-functions"><span class="header-section-number">2.2</span> <strong>Survey analysis functions</strong></a></li>
+  </ul></li>
   <li><a href="#data-and-software-requirements" id="toc-data-and-software-requirements" class="nav-link" data-scroll-target="#data-and-software-requirements"><span class="header-section-number">3</span> Data and software requirements</a></li>
   <li><a href="#identifying-the-survey-design" id="toc-identifying-the-survey-design" class="nav-link" data-scroll-target="#identifying-the-survey-design"><span class="header-section-number">4</span> Identifying the survey design</a></li>
   <li><a href="#preparing-the-data" id="toc-preparing-the-data" class="nav-link" data-scroll-target="#preparing-the-data"><span class="header-section-number">5</span> Preparing the data</a></li>
@@ -102,6 +106,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#example-3-estimates-for-population-sub-groups-domain-estimates" id="toc-example-3-estimates-for-population-sub-groups-domain-estimates" class="nav-link" data-scroll-target="#example-3-estimates-for-population-sub-groups-domain-estimates"><span class="header-section-number">8</span> Example 3: Estimates for population sub-groups (domain estimates)</a>
   <ul class="collapse">
   <li><a href="#an-additional-note-on-subsetting" id="toc-an-additional-note-on-subsetting" class="nav-link" data-scroll-target="#an-additional-note-on-subsetting"><span class="header-section-number">8.1</span> An additional note on subsetting</a></li>
+  <li><a href="#key-points-1" id="toc-key-points-1" class="nav-link" data-scroll-target="#key-points-1"><span class="header-section-number">8.2</span> Key points</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -150,26 +155,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>estimate means and proportions with confidence intervals.</p></li>
 <li><p>produce estimates for population subgroups.</p></li>
 </ul>
-<p>You can use this resource as a simple reference, or follow the examples using your own copy of the data. Information on the required software and data is provided below.</p>
 <p>For an introduction to the concepts covered here, including survey weights, stratification, clustering and design variables, see the companion resource <em>Survey Explainer: Survey weights and design variables</em>.</p>
+<p>You can use this resource as a simple reference, or follow the examples using your own copy of the data. Information on the required software and data is provided below.</p>
 </section>
 <section id="survey-weighting-and-design-in-r" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Survey weighting and design in R</h1>
-<p><strong>General weighting functions</strong></p>
+<p>There are several ways to apply survey weights in R. The most appropriate approach depends on whether you only need weighted estimates or whether you also need to account for the survey design.</p>
+<section id="general-weighting-functions" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="general-weighting-functions"><span class="header-section-number">2.1</span> <strong>General weighting functions</strong></h2>
 <p>Base R includes few options for weighted analysis but several R packages provide easy functions for calculating weighted estimates. For example,</p>
 <ul>
 <li><p>the <code>Hmisc</code> package includes functions such as <code>wtd.mean()</code>, <code>wtd.var()</code> and <code>wtd.quantile().</code></p></li>
 <li><p>the <code>summarytools</code> package supported weighted frequencies tables and common descriptive statistics.</p></li>
 </ul>
+</section>
+<section id="survey-analysis-functions" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="survey-analysis-functions"><span class="header-section-number">2.2</span> <strong>Survey analysis functions</strong></h2>
 <p>The functions from these packages can be used for producing weighted estimates, but they do not allow users to fully account for survey design features such as stratification, clustering and unequal selection probabilities.</p>
-<p><strong>Survey analysis functions</strong></p>
-<p>The <code>survey</code> package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. To use the Survey package, you need to:</p>
-<ul>
-<li>identify the survey weights and design variables.</li>
-<li>create a survey design object via the command <code>svydesign</code> - this tells R how the survey was designed and which weights to use.</li>
-<li>compute estimates with survey-specific functions.</li>
-</ul>
+<p>The <code>survey</code> package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. Before using the package, you must identify the survey weights and design variables and create a survey design object. This resource includes step-by-step examples showing how to do this.</p>
 <p>The <code>srvyr</code> package is based on the <code>survey</code> package but designed to work better with <code>dplyr</code> and the tidyverse approach to R code such as piping.</p>
+</section>
 </section>
 <section id="data-and-software-requirements" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Data and software requirements</h1>
@@ -503,11 +508,11 @@ RAgeE 47.48289 49.1433</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the proportion interested in politics</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>politics_interest <span class="ot">&lt;-</span> <span class="fu">svyciprop</span>(       <span class="co"># function from the survey package </span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span><span class="fu">I</span>(Politics <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> Politics <span class="sc">==</span> <span class="dv">2</span>),  <span class="co"># select respondents who answered 1 or 2</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>politics_interest <span class="ot">&lt;-</span> <span class="fu">svyciprop</span>(       <span class="co"># function for proportion </span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span><span class="fu">I</span>(Politics <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> Politics <span class="sc">==</span> <span class="dv">2</span>),  <span class="co"># for those who answered 1 or 2</span></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  bsa17.s                             <span class="co"># survey design object</span></span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>politics_interest</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>politics_interest                     <span class="co"># print result</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                        2.5% 97.5%
 I(Politics == 1 | Politics == 2) 0.430 0.411  0.45</code></pre>
@@ -530,16 +535,15 @@ I(Politics == 1 | Politics == 2) 0.430 0.411  0.45</code></pre>
 I(Politics == 1 | Politics == 2)       43  41.1  44.9</code></pre>
 </div>
 </div>
-<blockquote class="blockquote">
-<p>Try it yourself: Use svyciprop and the variable RAgecat5, to estimate the proportion of respondents aged 17-35.</p>
-</blockquote>
-<div class="callout callout-style-default callout-tip callout-titled">
+<p><strong>Try it:</strong></p>
+<p>Use svyciprop and the variable RAgecat5 to estimate the proportion of respondents aged 17-35. Run the code and compare to the solution below.</p>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Show solution
+<span class="screen-reader-only">Note</span>Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -562,8 +566,8 @@ I(Politics == 1 | Politics == 2)       43  41.1  44.9</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use svyciprop() to estimate the proportion and confidence interval</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>young_prop <span class="ot">&lt;-</span> <span class="fu">svyciprop</span>(</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span><span class="fu">I</span>(RAgecat5 <span class="sc">==</span> <span class="dv">1</span>),</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  bsa17.s</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span><span class="fu">I</span>(RAgecat5 <span class="sc">==</span> <span class="dv">1</span>),     </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  bsa17.s            </span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the estimate and confidence interval to percentages</span></span>
@@ -583,6 +587,14 @@ I(RAgecat5 == 1)     28.5  26.5  30.6</code></pre>
 </div>
 </div>
 </div>
+<section id="example-2-key-points" class="level3" data-number="7.0.1">
+<h3 data-number="7.0.1" class="anchored" data-anchor-id="example-2-key-points"><span class="header-section-number">7.0.1</span> Example 2: Key points</h3>
+<ul>
+<li><p><code>svyciprop()</code> can be used to estimate proportions and confidence intervals while accounting for the survey design.</p></li>
+<li><p>The group of interest is specified using a logical expression, for example <code>~I(RAgecat5 == 1)</code>.</p></li>
+<li><p>Estimates are returned as proportions but can be converted to percentages for easier interpretation.</p></li>
+</ul>
+</section>
 </section>
 <section id="example-3-estimates-for-population-sub-groups-domain-estimates" class="level1" data-number="8">
 <h1 data-number="8"><span class="header-section-number">8</span> Example 3: Estimates for population sub-groups (domain estimates)</h1>
@@ -627,32 +639,21 @@ I(RAgecat5 == 1)     28.5  26.5  30.6</code></pre>
 <span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Round numeric columns only</span></span>
 <span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>politics_region[, <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">round</span>(politics_region[, <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>], <span class="dv">1</span>)</span>
 <span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>politics_region</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a><span class="co"># print region, estimate and confidence intervals</span></span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>politics_region [<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>] </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                                    as_factor(GOR_ID) politics_interest ci_l
-A North East                             A North East              33.4 27.3
-B North West                             B North West              41.9 36.2
-D Yorkshire and The Humber D Yorkshire and The Humber              35.6 29.2
-E East Midlands                       E East Midlands              36.9 33.1
-F West Midlands                       F West Midlands              36.3 31.6
-G East of England                   G East of England              47.2 41.7
-H London                                     H London              54.2 47.6
-J South East                             J South East              44.6 38.8
-K South West                             K South West              46.5 39.7
-L Wales                                       L Wales              38.6 28.5
-M Scotland                                 M Scotland              42.7 36.3
-                           ci_u
-A North East               39.5
-B North West               47.6
-D Yorkshire and The Humber 41.9
-E East Midlands            40.7
-F West Midlands            41.1
-G East of England          52.6
-H London                   60.8
-J South East               50.5
-K South West               53.3
-L Wales                    48.7
-M Scotland                 49.2</code></pre>
+<pre><code>                           politics_interest ci_l ci_u
+A North East                            33.4 27.3 39.5
+B North West                            41.9 36.2 47.6
+D Yorkshire and The Humber              35.6 29.2 41.9
+E East Midlands                         36.9 33.1 40.7
+F West Midlands                         36.3 31.6 41.1
+G East of England                       47.2 41.7 52.6
+H London                                54.2 47.6 60.8
+J South East                            44.6 38.8 50.5
+K South West                            46.5 39.7 53.3
+L Wales                                 38.6 28.5 48.7
+M Scotland                              42.7 36.3 49.2</code></pre>
 </div>
 </div>
 <p>Let’s now plot the point estimates and their confidence intervals.</p>
@@ -691,13 +692,22 @@ M Scotland                 49.2</code></pre>
 <p>The estimates show political interest varies across regions, ranging from around one-third of adults in the North East to just over one-half in London. The confidence intervals indicate that some of this variation may reflect sampling uncertainty.</p>
 <section id="an-additional-note-on-subsetting" class="level2" data-number="8.1">
 <h2 data-number="8.1" class="anchored" data-anchor-id="an-additional-note-on-subsetting"><span class="header-section-number">8.1</span> An additional note on subsetting</h2>
-<p>Another way to estimate statistics for a subgroup is to analyse only respondents belonging to that group. For example, if we were only interested in respondents living in London, we could analyse just those cases and calculate the estimate for that subgroup using <code>subset ()</code> .</p>
-<p>There are a few points to note when using this approach.</p>
+<p>Another way to estimate statistics for a subgroup is to analyse only respondents belonging to that group. For example, if we were interested only in respondents who are employed, we could create a subset and calculate estimates for that subgroup.</p>
+<p>There are a few points to note when subsetting survey data.</p>
 <ul>
-<li><p>Survey weights are usually designed to make the <strong>full sample</strong> representative of the target population. If we analyse only a subset of respondents, the weights may not necessarily produce estimates that are representative of the corresponding population subgroup.</p></li>
-<li><p>In addition, it is important to retain all the survey design information when estimating standard errors and confidence intervals. If subsetting, the survey design object should be created first and then subset using the <code>subset()</code> function. This ensures that the survey weights, clustering and stratification information are retained in the analysis.</p></li>
+<li><p>Survey weights are usually designed to make the full sample representative of the target population. If we analyse only a subset of respondents, the weights may not necessarily produce estimates that are representative of the corresponding population subgroup.</p></li>
+<li><p>It is important to retain all the survey design information when estimating standard errors and confidence intervals. If subsetting, you should create the survey design object first and then subset using the <code>subset()</code> function. This ensures that the survey weights, clustering and stratification information are retained in the analysis.</p></li>
 </ul>
-<p>When estimates are required for several subgroups, <code>svyby()</code> is often more convenient because it produces results for all groups in a single step while correctly accounting for the survey design.</p>
+<p>Although subsetting can be useful when analysing a subgroup, domain estimation using <code>svyby()</code> is generally the preferred approach because it is simpler, less prone to error and naturally retains the survey design information.</p>
+</section>
+<section id="key-points-1" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="key-points-1"><span class="header-section-number">8.2</span> Key points</h2>
+<ul>
+<li><p>Domain estimates describe subgroups of the population, such as regions, age groups or men and women.</p></li>
+<li><p><code>svyby()</code> can be used to estimate statistics for multiple subgroups in a single command while accounting for the survey design.</p></li>
+<li><p>If new variables are added to the dataset after creating a survey design object, the survey design object should be recreated before analysis.</p></li>
+<li><p>Be cautious when analysing a subgroup separately. Survey weights may not make the subsample representative of the corresponding population subgroup. Always create the survey design object first and then use subset() to retain all the survey design information.</p></li>
+</ul>
 </section>
 </section>
 

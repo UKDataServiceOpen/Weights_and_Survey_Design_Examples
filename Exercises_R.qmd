@@ -35,13 +35,15 @@ The examples show how to:
 
 - produce estimates for population subgroups.
 
-You can use this resource as a simple reference, or follow the examples using your own copy of the data. Information on the required software and data is provided below.
-
 For an introduction to the concepts covered here, including survey weights, stratification, clustering and design variables, see the companion resource *Survey Explainer: Survey weights and design variables*.
+
+You can use this resource as a simple reference, or follow the examples using your own copy of the data. Information on the required software and data is provided below.
 
 # Survey weighting and design in R
 
-**General weighting functions**
+There are several ways to apply survey weights in R. The most appropriate approach depends on whether you only need weighted estimates or whether you also need to account for the survey design.
+
+## **General weighting functions**
 
 Base R includes few options for weighted analysis but several R packages provide easy functions for calculating weighted estimates. For example,
 
@@ -49,15 +51,11 @@ Base R includes few options for weighted analysis but several R packages provide
 
 - the `summarytools` package supported weighted frequencies tables and common descriptive statistics.
 
+## **Survey analysis functions**
+
 The functions from these packages can be used for producing weighted estimates, but they do not allow users to fully account for survey design features such as stratification, clustering and unequal selection probabilities.
 
-**Survey analysis functions**
-
-The `survey` package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. To use the Survey package, you need to:
-
-- identify the survey weights and design variables.
-- create a survey design object via the command `svydesign` - this tells R how the survey was designed and which weights to use.
-- compute estimates with survey-specific functions.
+The `survey` package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. Before using the package, you must identify the survey weights and design variables and create a survey design object. This resource includes step-by-step examples showing how to do this.
 
 The `srvyr` package is based on the `survey` package but designed to work better with `dplyr` and the tidyverse approach to R code such as piping.
 
@@ -362,11 +360,11 @@ Categories `1` ("A great deal") and `2` ("Quite a lot") represent respondents wh
 
 # Estimate the proportion interested in politics
 
-politics_interest <- svyciprop(       # function from the survey package 
-  ~I(Politics == 1 | Politics == 2),  # select respondents who answered 1 or 2
+politics_interest <- svyciprop(       # function for proportion 
+  ~I(Politics == 1 | Politics == 2),  # for those who answered 1 or 2
   bsa17.s                             # survey design object
 )
-politics_interest
+politics_interest                     # print result
 ```
 
 The output from `svyciprop()` gives the estimate as a proportion. For easier interpretation, we can convert the estimate and confidence interval to percentages.
@@ -384,10 +382,12 @@ round(
 )
 ```
 
-> Try it yourself: Use svyciprop and the variable RAgecat5, to estimate the proportion of respondents aged 17-35.
+**Try it:**
 
-::: {.callout-tip collapse="true"}
-## Show solution
+Use svyciprop and the variable RAgecat5 to estimate the proportion of respondents aged 17-35. Run the code and compare to the solution below.
+
+::: {.callout-note collapse="true"}
+## Solution
 
 ```{r}
 
@@ -403,8 +403,8 @@ table(
 
 # Use svyciprop() to estimate the proportion and confidence interval
 young_prop <- svyciprop(
-  ~I(RAgecat5 == 1),
-  bsa17.s
+  ~I(RAgecat5 == 1),     
+  bsa17.s            
 )
 
 # Convert the estimate and confidence interval to percentages
@@ -418,6 +418,14 @@ round(
 )
 ```
 :::
+
+### Example 2: Key points
+
+- `svyciprop()` can be used to estimate proportions and confidence intervals while accounting for the survey design.
+
+- The group of interest is specified using a logical expression, for example `~I(RAgecat5 == 1)`.
+
+- Estimates are returned as proportions but can be converted to percentages for easier interpretation.
 
 # Example 3: Estimates for population sub-groups (domain estimates)
 
@@ -468,7 +476,8 @@ politics_region[, 2:4] <- politics_region[, 2:4] * 100
 # Round numeric columns only
 politics_region[, 2:4] <- round(politics_region[, 2:4], 1)
 
-politics_region
+# print region, estimate and confidence intervals
+politics_region [2:4] 
 ```
 
 Let's now plot the point estimates and their confidence intervals.
@@ -503,12 +512,22 @@ The estimates show political interest varies across regions, ranging from around
 
 ## An additional note on subsetting
 
-Another way to estimate statistics for a subgroup is to analyse only respondents belonging to that group. For example, if we were only interested in respondents living in London, we could analyse just those cases and calculate the estimate for that subgroup using `subset ()` .
+Another way to estimate statistics for a subgroup is to analyse only respondents belonging to that group. For example, if we were interested only in respondents who are employed, we could create a subset and calculate estimates for that subgroup.
 
-There are a few points to note when using this approach.
+There are a few points to note when subsetting survey data.
 
-- Survey weights are usually designed to make the **full sample** representative of the target population. If we analyse only a subset of respondents, the weights may not necessarily produce estimates that are representative of the corresponding population subgroup.
+- Survey weights are usually designed to make the full sample representative of the target population. If we analyse only a subset of respondents, the weights may not necessarily produce estimates that are representative of the corresponding population subgroup.
 
-- In addition, it is important to retain all the survey design information when estimating standard errors and confidence intervals. If subsetting, the survey design object should be created first and then subset using the `subset()` function. This ensures that the survey weights, clustering and stratification information are retained in the analysis.
+- It is important to retain all the survey design information when estimating standard errors and confidence intervals. If subsetting, you should create the survey design object first and then subset using the `subset()` function. This ensures that the survey weights, clustering and stratification information are retained in the analysis.
 
-When estimates are required for several subgroups, `svyby()` is often more convenient because it produces results for all groups in a single step while correctly accounting for the survey design.
+Although subsetting can be useful when analysing a subgroup, domain estimation using `svyby()` is generally the preferred approach because it is simpler, less prone to error and naturally retains the survey design information.
+
+## Key points
+
+- Domain estimates describe subgroups of the population, such as regions, age groups or men and women.
+
+- `svyby()` can be used to estimate statistics for multiple subgroups in a single command while accounting for the survey design.
+
+- If new variables are added to the dataset after creating a survey design object, the survey design object should be recreated before analysis.
+
+- Be cautious when analysing a subgroup separately. Survey weights may not make the subsample representative of the corresponding population subgroup. Always create the survey design object first and then use subset() to retain all the survey design information.
