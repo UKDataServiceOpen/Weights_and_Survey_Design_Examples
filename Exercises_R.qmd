@@ -27,7 +27,7 @@ This resource shows how to apply survey weights and account for survey design in
 
 The examples show how to:
 
-- apply survey weights.
+- apply survey weights when calculating a mean.
 
 - specify a survey design using the survey package.
 
@@ -41,23 +41,19 @@ You can use this resource as a simple reference, or follow the examples using yo
 
 # Survey weighting and design in R
 
-There are several ways to apply survey weights in R. The most appropriate approach depends on whether you only need weighted estimates or whether you also need to account for the survey design.
+There are several ways to apply survey weights in R. A key distinction is between general weighting functions which apply weifhts without accounting for the survey design, and survey-specific approaches, which can account for survey design when estimating measures of precision such as confidence intervals.
 
 ## **General weighting functions**
 
-Base R includes few options for weighted analysis but several R packages provide easy functions for calculating weighted estimates. For example,
-
-- the `Hmisc` package includes functions such as `wtd.mean()`, `wtd.var()` and `wtd.quantile().`
-
-- the `summarytools` package supported weighted frequencies tables and common descriptive statistics.
+Base R provides some functionality for weighted analysis, including functions such as `weighted.mean()` and regression models like `lm()` that allow the use of weights. Additional R packages offer convenient functions for calculating weighted estimates. For example, the `Hmisc` package includes functions such as `wtd.mean()`, `wtd.var(),` and `wtd.quantile()`, while the summarytools package supports weighted frequency tables and common descriptive statistics.
 
 ## **Survey analysis functions**
 
-The functions from these packages can be used for producing weighted estimates, but they do not allow users to fully account for survey design features such as stratification, clustering and unequal selection probabilities.
+The functions discussed above can be used for producing weighted estimates, but they do not allow users to fully account for survey design features such as stratification, clustering and unequal selection probabilities.
 
 The `survey` package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. Before using the package, you must identify the survey weights and design variables and create a survey design object. This resource includes step-by-step examples showing how to do this.
 
-The `srvyr` package is based on the `survey` package but designed to work better with `dplyr` and the tidyverse approach to R code such as piping.
+The `srvyr` package is based on the `survey` package and designed to work better with `dplyr` and the tidyverse approach to R including piping.
 
 # Data and software requirements
 
@@ -168,7 +164,7 @@ mean_age
 
 ```
 
-To calculated the weighted mean we first use `wtd.mean()`, from the `Hmisc` package.
+To calculate the weighted mean, we first use `wtd.mean()`, from the `Hmisc` package.
 
 ```{r}
 
@@ -242,9 +238,7 @@ The approximate 95% confidence interval suggests that the population mean age li
 
 The `survey` package provides functions that apply survey weights and account for the survey design when estimating standard errors and confidence intervals.
 
-To use these functions, we first need to specify the survey design.
-
-### Create the survey design object
+To use these functions, we first need to specify the survey design by creating a survey design object. A survey design object combines the survey dataset with information about the survey weights and sample design. I
 
 To create a survey design object, we need the variables identified earlier:
 
@@ -252,7 +246,7 @@ To create a survey design object, we need the variables identified earlier:
 - `StratID` - the stratum identifier.
 - `WtFactor` - the survey weight.
 
-We create a survey design object using `svydesign().` The resulting object stores the survey design information to use in subsequent analyses.
+We create a survey design object using `svydesign().` The resulting object is then used with functions from the `survey` package to produce estimates that account for the survey design.
 
 ```{r}
 # Create a survey design object
@@ -266,7 +260,7 @@ The survey design object is called `bsa17.s.`
 
 ## Using the survey package
 
-We can now use functions from the survey package to produce estimates that account for the survey design. Here we use `svymean()` to estimate mean age of respondents.
+We can now use functions from the `survey` package to produce estimates that account for the survey design. Here we use `svymean()` to estimate mean age of respondents.
 
 ```{r mean}
 #Estimate mean age using the svymean() from the survey package
@@ -346,7 +340,7 @@ politics_freq <- table(
     )
   )
 )
-
+# Display frequencies in a table
 knitr::kable(
   as.data.frame(politics_freq),
   col.names = c("Response", "Frequency")
@@ -418,7 +412,7 @@ round(
 ```
 :::
 
-### Example 2: Key points
+## Example 2: Key points
 
 - `svyciprop()` can be used to estimate proportions and confidence intervals while accounting for the survey design.
 

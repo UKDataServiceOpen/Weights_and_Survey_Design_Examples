@@ -102,7 +102,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#using-the-survey-package" id="toc-using-the-survey-package" class="nav-link" data-scroll-target="#using-the-survey-package"><span class="header-section-number">6.4</span> Using the survey package</a></li>
   <li><a href="#key-points" id="toc-key-points" class="nav-link" data-scroll-target="#key-points"><span class="header-section-number">6.5</span> Key points</a></li>
   </ul></li>
-  <li><a href="#example-2-estimating-a-proportion" id="toc-example-2-estimating-a-proportion" class="nav-link" data-scroll-target="#example-2-estimating-a-proportion"><span class="header-section-number">7</span> Example 2: Estimating a proportion</a></li>
+  <li><a href="#example-2-estimating-a-proportion" id="toc-example-2-estimating-a-proportion" class="nav-link" data-scroll-target="#example-2-estimating-a-proportion"><span class="header-section-number">7</span> Example 2: Estimating a proportion</a>
+  <ul class="collapse">
+  <li><a href="#example-2-key-points" id="toc-example-2-key-points" class="nav-link" data-scroll-target="#example-2-key-points"><span class="header-section-number">7.1</span> Example 2: Key points</a></li>
+  </ul></li>
   <li><a href="#example-3-estimates-for-population-sub-groups-domain-estimates" id="toc-example-3-estimates-for-population-sub-groups-domain-estimates" class="nav-link" data-scroll-target="#example-3-estimates-for-population-sub-groups-domain-estimates"><span class="header-section-number">8</span> Example 3: Estimates for population sub-groups (domain estimates)</a>
   <ul class="collapse">
   <li><a href="#an-additional-note-on-subsetting" id="toc-an-additional-note-on-subsetting" class="nav-link" data-scroll-target="#an-additional-note-on-subsetting"><span class="header-section-number">8.1</span> An additional note on subsetting</a></li>
@@ -150,7 +153,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This resource shows how to apply survey weights and account for survey design in R through examples using data from the 2017 British Social Attitudes Survey.</p>
 <p>The examples show how to:</p>
 <ul>
-<li><p>apply survey weights.</p></li>
+<li><p>apply survey weights when calculating a mean.</p></li>
 <li><p>specify a survey design using the survey package.</p></li>
 <li><p>estimate means and proportions with confidence intervals.</p></li>
 <li><p>produce estimates for population subgroups.</p></li>
@@ -160,20 +163,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="survey-weighting-and-design-in-r" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Survey weighting and design in R</h1>
-<p>There are several ways to apply survey weights in R. The most appropriate approach depends on whether you only need weighted estimates or whether you also need to account for the survey design.</p>
+<p>There are several ways to apply survey weights in R. A key distinction is between general weighting functions which apply weifhts without accounting for the survey design, and survey-specific approaches, which can account for survey design when estimating measures of precision such as confidence intervals.</p>
 <section id="general-weighting-functions" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="general-weighting-functions"><span class="header-section-number">2.1</span> <strong>General weighting functions</strong></h2>
-<p>Base R includes few options for weighted analysis but several R packages provide easy functions for calculating weighted estimates. For example,</p>
-<ul>
-<li><p>the <code>Hmisc</code> package includes functions such as <code>wtd.mean()</code>, <code>wtd.var()</code> and <code>wtd.quantile().</code></p></li>
-<li><p>the <code>summarytools</code> package supported weighted frequencies tables and common descriptive statistics.</p></li>
-</ul>
+<p>Base R provides some functionality for weighted analysis, including functions such as <code>weighted.mean()</code> and regression models like <code>lm()</code> that allow the use of weights. Additional R packages offer convenient functions for calculating weighted estimates. For example, the <code>Hmisc</code> package includes functions such as <code>wtd.mean()</code>, <code>wtd.var(),</code> and <code>wtd.quantile()</code>, while the summarytools package supports weighted frequency tables and common descriptive statistics.</p>
 </section>
 <section id="survey-analysis-functions" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="survey-analysis-functions"><span class="header-section-number">2.2</span> <strong>Survey analysis functions</strong></h2>
-<p>The functions from these packages can be used for producing weighted estimates, but they do not allow users to fully account for survey design features such as stratification, clustering and unequal selection probabilities.</p>
+<p>The functions discussed above can be used for producing weighted estimates, but they do not allow users to fully account for survey design features such as stratification, clustering and unequal selection probabilities.</p>
 <p>The <code>survey</code> package provides a set of functions that apply survey weights and correctly account for the sample design when estimating standard errors and confidence intervals. Before using the package, you must identify the survey weights and design variables and create a survey design object. This resource includes step-by-step examples showing how to do this.</p>
-<p>The <code>srvyr</code> package is based on the <code>survey</code> package but designed to work better with <code>dplyr</code> and the tidyverse approach to R code such as piping.</p>
+<p>The <code>srvyr</code> package is based on the <code>survey</code> package and designed to work better with <code>dplyr</code> and the tidyverse approach to R including piping.</p>
 </section>
 </section>
 <section id="data-and-software-requirements" class="level1" data-number="3">
@@ -291,7 +290,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>[1] 52.19358</code></pre>
 </div>
 </div>
-<p>To calculated the weighted mean we first use <code>wtd.mean()</code>, from the <code>Hmisc</code> package.</p>
+<p>To calculate the weighted mean, we first use <code>wtd.mean()</code>, from the <code>Hmisc</code> package.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Weighted mean age</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>weighted_mean_age <span class="ot">&lt;-</span> <span class="fu">wtd.mean</span>(</span>
@@ -358,16 +357,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="specifying-the-survey-design-in-r" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="specifying-the-survey-design-in-r"><span class="header-section-number">6.3</span> Specifying the survey design in R</h2>
 <p>The <code>survey</code> package provides functions that apply survey weights and account for the survey design when estimating standard errors and confidence intervals.</p>
-<p>To use these functions, we first need to specify the survey design.</p>
-<section id="create-the-survey-design-object" class="level3" data-number="6.3.1">
-<h3 data-number="6.3.1" class="anchored" data-anchor-id="create-the-survey-design-object"><span class="header-section-number">6.3.1</span> Create the survey design object</h3>
+<p>To use these functions, we first need to specify the survey design by creating a survey design object. A survey design object combines the survey dataset with information about the survey weights and sample design. I</p>
 <p>To create a survey design object, we need the variables identified earlier:</p>
 <ul>
 <li><code>Spoint</code> - the primary sampling unit identifier.</li>
 <li><code>StratID</code> - the stratum identifier.</li>
 <li><code>WtFactor</code> - the survey weight.</li>
 </ul>
-<p>We create a survey design object using <code>svydesign().</code> The resulting object stores the survey design information to use in subsequent analyses.</p>
+<p>We create a survey design object using <code>svydesign().</code> The resulting object is then used with functions from the <code>survey</code> package to produce estimates that account for the survey design.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a survey design object</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>bsa17.s<span class="ot">&lt;-</span><span class="fu">svydesign</span>(<span class="at">ids=</span><span class="sc">~</span>Spoint,</span>
@@ -377,10 +374,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The survey design object is called <code>bsa17.s.</code></p>
 </section>
-</section>
 <section id="using-the-survey-package" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="using-the-survey-package"><span class="header-section-number">6.4</span> Using the survey package</h2>
-<p>We can now use functions from the survey package to produce estimates that account for the survey design. Here we use <code>svymean()</code> to estimate mean age of respondents.</p>
+<p>We can now use functions from the <code>survey</code> package to produce estimates that account for the survey design. Here we use <code>svymean()</code> to estimate mean age of respondents.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Estimate mean age using the svymean() from the survey package</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -461,7 +457,7 @@ RAgeE 47.48289 49.1433</code></pre>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Display frequencies in a table</span></span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(politics_freq),</span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Response"</span>, <span class="st">"Frequency"</span>)</span>
@@ -586,8 +582,8 @@ I(RAgecat5 == 1)     28.5  26.5  30.6</code></pre>
 </div>
 </div>
 </div>
-<section id="example-2-key-points" class="level3" data-number="7.0.1">
-<h3 data-number="7.0.1" class="anchored" data-anchor-id="example-2-key-points"><span class="header-section-number">7.0.1</span> Example 2: Key points</h3>
+<section id="example-2-key-points" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="example-2-key-points"><span class="header-section-number">7.1</span> Example 2: Key points</h2>
 <ul>
 <li><p><code>svyciprop()</code> can be used to estimate proportions and confidence intervals while accounting for the survey design.</p></li>
 <li><p>The group of interest is specified using a logical expression, for example <code>~I(RAgecat5 == 1)</code>.</p></li>
