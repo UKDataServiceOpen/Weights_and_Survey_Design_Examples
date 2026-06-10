@@ -161,7 +161,8 @@ To start, we will first calculate the unweighted mean age.
 
 mean_age <- mean(
   bsa17$RAgeE,
- )
+  na.rm = TRUE
+)
 
 mean_age
 
@@ -175,7 +176,6 @@ To calculated the weighted mean we first use `wtd.mean()`, from the `Hmisc` pack
 weighted_mean_age <- wtd.mean(
   bsa17$RAgeE,
   weights = bsa17$WtFactor,
-  normwt = TRUE,
   na.rm = TRUE
 )
 
